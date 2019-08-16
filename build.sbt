@@ -64,7 +64,7 @@ hadoopVersion in ThisBuild := sys.props.getOrElse("hadoop.version", "2.7.7")
 
 akkaVersion in ThisBuild := sys.props.getOrElse("akka.version", "2.5.17")
 
-elasticsearchVersion in ThisBuild := sys.props.getOrElse("elasticsearch.version", "5.6.9")
+elasticsearchVersion in ThisBuild := sys.props.getOrElse("elasticsearch.version", "7.2.0")
 
 hbaseVersion in ThisBuild := sys.props.getOrElse("hbase.version", "1.2.6")
 
@@ -90,6 +90,9 @@ val commonTestSettings = Seq(
     "org.scalikejdbc" %% "scalikejdbc" % "3.1.0" % "test"))
 
 val dataElasticsearch = (project in file("storage/elasticsearch")).
+  settings(commonSettings: _*)
+
+val dataElasticsearch7 = (project in file("storage/elasticsearch7")).
   settings(commonSettings: _*)
 
 val dataHbase = (project in file("storage/hbase")).
@@ -158,8 +161,16 @@ val tools = (project in file("tools")).
   enablePlugins(GenJavadocPlugin).
   enablePlugins(SbtTwirl)
 
+val dataEs = majorVersion(es) match {
+  case 1 => dataElasticsearch1
+  case 2 => dataElasticsearch
+  case 5 => dataElasticsearch
+  case 6 => dataElasticsearch
+  case _ => dataElasticsearch7
+}
+
 val storageProjectReference = Seq(
-    dataElasticsearch,
+    dataEs,
     dataHbase,
     dataHdfs,
     dataJdbc,
