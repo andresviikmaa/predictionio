@@ -45,7 +45,7 @@ hadoopVersion in ThisBuild := sys.props.getOrElse("hadoop.version", "2.7.7")
 
 akkaVersion in ThisBuild := sys.props.getOrElse("akka.version", "2.5.17")
 
-lazy val es = sys.props.getOrElse("elasticsearch.version", "5.6.9")
+lazy val es = sys.props.getOrElse("elasticsearch.version", "7.2.0")
 
 elasticsearchVersion in ThisBuild := es
 
@@ -77,6 +77,9 @@ val dataElasticsearch1 = (project in file("storage/elasticsearch1")).
   enablePlugins(GenJavadocPlugin)
 
 val dataElasticsearch = (project in file("storage/elasticsearch")).
+  settings(commonSettings: _*)
+
+val dataElasticsearch7 = (project in file("storage/elasticsearch7")).
   settings(commonSettings: _*)
 
 val dataHbase = (project in file("storage/hbase")).
@@ -145,7 +148,13 @@ val tools = (project in file("tools")).
   enablePlugins(GenJavadocPlugin).
   enablePlugins(SbtTwirl)
 
-val dataEs = if (majorVersion(es) == 1) dataElasticsearch1 else dataElasticsearch
+val dataEs = majorVersion(es) match {
+  case 1 => dataElasticsearch1
+  case 2 => dataElasticsearch
+  case 5 => dataElasticsearch
+  case 6 => dataElasticsearch
+  case _ => dataElasticsearch7
+}
 
 val storageSubprojects = Seq(
     dataEs,
@@ -167,8 +176,8 @@ val root = (project in file(".")).
   settings(commonSettings: _*).
   enablePlugins(ScalaUnidocPlugin).
   settings(
-    unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject -- inProjects(dataElasticsearch, dataElasticsearch1),
-    unidocProjectFilter in (JavaUnidoc, unidoc) := inAnyProject -- inProjects(dataElasticsearch, dataElasticsearch1),
+    unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject -- inProjects(dataElasticsearch, dataElasticsearch1, dataElasticsearch7),
+    unidocProjectFilter in (JavaUnidoc, unidoc) := inAnyProject -- inProjects(dataElasticsearch, dataElasticsearch1, dataElasticsearch7),
     scalacOptions in (ScalaUnidoc, unidoc) ++= Seq(
       "-groups",
       "-skip-packages",
