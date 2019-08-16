@@ -161,16 +161,8 @@ val tools = (project in file("tools")).
   enablePlugins(GenJavadocPlugin).
   enablePlugins(SbtTwirl)
 
-val dataEs = majorVersion(es) match {
-  case 1 => dataElasticsearch1
-  case 2 => dataElasticsearch
-  case 5 => dataElasticsearch
-  case 6 => dataElasticsearch
-  case _ => dataElasticsearch7
-}
-
 val storageProjectReference = Seq(
-    dataEs,
+  dataElasticsearch7,
     dataHbase,
     dataHdfs,
     dataJdbc,
