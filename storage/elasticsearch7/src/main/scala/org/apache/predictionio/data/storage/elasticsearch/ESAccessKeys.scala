@@ -45,10 +45,9 @@ class ESAccessKeys(client: RestClient, config: StorageClientConfig, index: Strin
    
   ESUtils.createIndex(client, internalIndex)
   val mappingJson =
-    (estype ->
       ("properties" ->
         ("key" -> ("type" -> "keyword")) ~
-        ("events" -> ("type" -> "keyword"))))
+        ("events" -> ("type" -> "keyword")))
   ESUtils.createMapping(client, internalIndex, estype, compact(render(mappingJson)))
 
   def insert(accessKey: AccessKey): Option[String] = {

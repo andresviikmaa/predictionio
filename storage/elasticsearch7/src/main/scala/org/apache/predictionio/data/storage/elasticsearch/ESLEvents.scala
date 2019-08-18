@@ -56,7 +56,6 @@ class ESLEvents(val client: RestClient, config: StorageClientConfig, val baseInd
     val index = baseIndex + "_" + estype
     ESUtils.createIndex(client, index)
     val json =
-      (estype ->
         ("properties" ->
           ("name" -> ("type" -> "keyword")) ~
           ("eventId" -> ("type" -> "keyword")) ~
@@ -69,7 +68,7 @@ class ESLEvents(val client: RestClient, config: StorageClientConfig, val baseInd
           ("eventTime" -> ("type" -> "date")) ~
           ("tags" -> ("type" -> "keyword")) ~
           ("prId" -> ("type" -> "keyword")) ~
-          ("creationTime" -> ("type" -> "date"))))
+          ("creationTime" -> ("type" -> "date")))
     ESUtils.createMapping(client, index, estype, compact(render(json)))
     true
   }

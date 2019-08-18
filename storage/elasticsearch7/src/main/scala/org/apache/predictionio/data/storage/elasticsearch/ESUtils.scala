@@ -166,6 +166,7 @@ object ESUtils {
   def createIndex(
     client: RestClient,
     index: String): Unit = {
+    /*
     client.performRequest(
       "HEAD",
       s"/$index",
@@ -179,28 +180,59 @@ object ESUtils {
         case _ =>
           throw new IllegalStateException(s"/$index is invalid.")
       }
+     */
   }
 
   def createMapping(
-    client: RestClient,
-    index: String,
-    estype: String,
-    json: String): Unit = {
+                     client: RestClient,
+                     index: String,
+                     estype: String,
+                     json: String): Unit = {
+
     client.performRequest(
       "HEAD",
-      s"/$index/_mapping/$estype",
+      s"/$index",
+      Map.empty[String, String].asJava).getStatusLine.getStatusCode match {
+      case 404 =>
+        client.performRequest(
+          "PUT",
+          s"/$index",
+          Map.empty[String, String].asJava)
+
+        val entity = new NStringEntity(json, ContentType.APPLICATION_JSON)
+        client.performRequest(
+          "PUT",
+          s"/$index/_mapping",
+          Map.empty[String, String].asJava,
+          entity).getStatusLine.getStatusCode match {
+          case 200 =>
+          case _ => {
+            println(json)
+            client.performRequest("DELETE", s"/$index",Map.empty[String, String].asJava)
+            throw new IllegalStateException(s"/$index is invalid.")
+          }
+        }
+      case 200 =>
+      case _ =>
+        throw new IllegalStateException(s"/$index is invalid.")
+    }
+    /*
+    client.performRequest(
+      "GET",
+      s"/$index/_mapping",
       Map.empty[String, String].asJava).getStatusLine.getStatusCode match {
         case 404 =>
           val entity = new NStringEntity(json, ContentType.APPLICATION_JSON)
           client.performRequest(
             "PUT",
-            s"/$index/_mapping/$estype",
+            s"/$index/_mapping",
             Map.empty[String, String].asJava,
             entity)
         case 200 =>
         case _ =>
-          throw new IllegalStateException(s"/$index/$estype is invalid: $json")
+          throw new IllegalStateException(s"/$index is invalid: $json")
       }
+    */
   }
 
   def formatUTCDateTime(dt: DateTime): String = {

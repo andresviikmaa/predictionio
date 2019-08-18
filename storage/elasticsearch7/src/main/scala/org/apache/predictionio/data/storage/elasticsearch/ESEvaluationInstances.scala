@@ -46,7 +46,6 @@ class ESEvaluationInstances(client: RestClient, config: StorageClientConfig, ind
 
   ESUtils.createIndex(client, internalIndex)
   val mappingJson =
-    (estype ->
       ("properties" ->
         ("status" -> ("type" -> "keyword")) ~
         ("startTime" -> ("type" -> "date")) ~
@@ -56,7 +55,7 @@ class ESEvaluationInstances(client: RestClient, config: StorageClientConfig, ind
         ("batch" -> ("type" -> "keyword")) ~
         ("evaluatorResults" -> ("type" -> "text")) ~
         ("evaluatorResultsHTML" -> ("enabled" -> false)) ~
-        ("evaluatorResultsJSON" -> ("enabled" -> false))))
+        ("evaluatorResultsJSON" -> ("enabled" -> false)))
   ESUtils.createMapping(client, internalIndex, estype, compact(render(mappingJson)))
 
   def insert(i: EvaluationInstance): String = {
