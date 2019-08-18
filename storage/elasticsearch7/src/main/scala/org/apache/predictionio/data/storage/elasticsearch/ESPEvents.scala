@@ -81,7 +81,7 @@ class ESPEvents(client: RestClient, config: StorageClientConfig, baseIndex: Stri
     val estype = getEsType(appId, channelId)
     val index = baseIndex + "_" + estype
     val conf = new Configuration()
-    conf.set("es.resource", s"$index/$estype")
+    conf.set("es.resource", s"$index")
     conf.set("es.query", query)
     conf.set("es.nodes", getESNodes())
 
@@ -100,7 +100,7 @@ class ESPEvents(client: RestClient, config: StorageClientConfig, baseIndex: Stri
     appId: Int, channelId: Option[Int])(sc: SparkContext): Unit = {
     val estype = getEsType(appId, channelId)
     val index = baseIndex + "_" + estype
-    val conf = Map("es.resource" -> s"$index/$estype", "es.nodes" -> getESNodes())
+    val conf = Map("es.resource" -> s"$index", "es.nodes" -> getESNodes())
     events.map { event =>
       ESEventsUtil.eventToPut(event, appId)
     }.saveToEs(conf)
@@ -121,7 +121,7 @@ class ESPEvents(client: RestClient, config: StorageClientConfig, baseIndex: Stri
             val entity = new NStringEntity(compact(render(json)), ContentType.APPLICATION_JSON)
             val response = client.performRequest(
               "POST",
-              s"/$index/$estype/_delete_by_query",
+              s"/$index/_delete_by_query",
               Map("refresh" -> ESUtils.getEventDataRefresh(config)).asJava,
               entity)
           val jsonResponse = parse(EntityUtils.toString(response.getEntity))
@@ -129,11 +129,11 @@ class ESPEvents(client: RestClient, config: StorageClientConfig, baseIndex: Stri
           result match {
             case "deleted" =>
             case _ =>
-              logger.error(s"[$result] Failed to update $index/$estype:$eventId")
+              logger.error(s"[$result] Failed to update $index:$eventId")
           }
         } catch {
           case e: IOException =>
-            logger.error(s"Failed to update $index/$estype:$eventId", e)
+            logger.error(s"Failed to update $index:$eventId", e)
         }
       }
     }

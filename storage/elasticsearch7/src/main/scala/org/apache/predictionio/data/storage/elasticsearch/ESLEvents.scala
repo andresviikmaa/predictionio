@@ -83,17 +83,17 @@ class ESLEvents(val client: RestClient, config: StorageClientConfig, val baseInd
       val entity = new NStringEntity(compact(render(json)), ContentType.APPLICATION_JSON)
       client.performRequest(
         "POST",
-        s"/$index/$estype/_delete_by_query",
+        s"/$index/_delete_by_query",
         Map("refresh" -> ESUtils.getEventDataRefresh(config)).asJava,
         entity).getStatusLine.getStatusCode match {
           case 200 => true
           case _ =>
-            error(s"Failed to remove $index/$estype")
+            error(s"Failed to remove $index")
             false
         }
     } catch {
       case e: Exception =>
-        error(s"Failed to remove $index/$estype", e)
+        error(s"Failed to remove $index", e)
         false
     }
   }
@@ -126,7 +126,7 @@ class ESLEvents(val client: RestClient, config: StorageClientConfig, val baseInd
         val entity = new NStringEntity(compact(render(json)), ContentType.APPLICATION_JSON)
         val response = client.performRequest(
           "POST",
-          s"/$index/$estype/$id",
+          s"/$index/$id",
           Map("refresh" -> ESUtils.getEventDataRefresh(config)).asJava,
           entity)
         val jsonResponse = parse(EntityUtils.toString(response.getEntity))
@@ -135,12 +135,12 @@ class ESLEvents(val client: RestClient, config: StorageClientConfig, val baseInd
           case "created" => id
           case "updated" => id
           case _ =>
-            error(s"[$result] Failed to update $index/$estype/$id")
+            error(s"[$result] Failed to update $index/$id")
             ""
         }
       } catch {
         case e: IOException =>
-          error(s"Failed to update $index/$estype/<id>", e)
+          error(s"Failed to update $index/<id>", e)
           ""
       }
     }
@@ -202,13 +202,13 @@ class ESLEvents(val client: RestClient, config: StorageClientConfig, val baseInd
             case "created" => id
             case "updated" => id
             case _ =>
-              error(s"[$result] Failed to update $index/$estype/$id")
+              error(s"[$result] Failed to update $index/$id")
               ""
           }
         }
       } catch {
         case e: IOException =>
-          error(s"Failed to update $index/$estype/<id>", e)
+          error(s"Failed to update $index/<id>", e)
           Nil
       }
     }
@@ -219,7 +219,7 @@ class ESLEvents(val client: RestClient, config: StorageClientConfig, val baseInd
     try {
       client.performRequest(
         "GET",
-        s"/$index/$estype/$id",
+        s"/$index/$id",
         Map.empty[String, String].asJava).getStatusLine.getStatusCode match {
           case 200 => true
           case _ => false
@@ -229,11 +229,11 @@ class ESLEvents(val client: RestClient, config: StorageClientConfig, val baseInd
         e.getResponse.getStatusLine.getStatusCode match {
           case 404 => false
           case _ =>
-            error(s"Failed to access to /$index/$estype/$id", e)
+            error(s"Failed to access to /$index/$id", e)
             false
         }
       case e: IOException =>
-        error(s"Failed to access to $index/$estype/$id", e)
+        error(s"Failed to access to $index/$id", e)
         false
     }
   }
@@ -253,7 +253,7 @@ class ESLEvents(val client: RestClient, config: StorageClientConfig, val baseInd
         val entity = new NStringEntity(compact(render(json)), ContentType.APPLICATION_JSON)
         val response = client.performRequest(
           "POST",
-          s"/$index/$estype/_search",
+          s"/$index/_search",
           Map.empty[String, String].asJava,
           entity)
         val jsonResponse = parse(EntityUtils.toString(response.getEntity))
@@ -266,7 +266,7 @@ class ESLEvents(val client: RestClient, config: StorageClientConfig, val baseInd
         }
       } catch {
         case e: IOException =>
-          error("Failed to access to /$index/$estype/_search", e)
+          error("Failed to access to /$index/_search", e)
           None
       }
     }
@@ -287,14 +287,14 @@ class ESLEvents(val client: RestClient, config: StorageClientConfig, val baseInd
         val entity = new NStringEntity(compact(render(json)), ContentType.APPLICATION_JSON)
         val response = client.performRequest(
           "POST",
-          s"/$index/$estype/_delete_by_query",
+          s"/$index/_delete_by_query",
           Map("refresh" -> ESUtils.getEventDataRefresh(config)).asJava,
           entity)
         val jsonResponse = parse(EntityUtils.toString(response.getEntity))
         (jsonResponse \ "deleted").extract[Int] > 0
       } catch {
         case e: IOException =>
-          error(s"Failed to delete $index/$estype:$eventId", e)
+          error(s"Failed to delete $index:$eventId", e)
           false
       }
     }

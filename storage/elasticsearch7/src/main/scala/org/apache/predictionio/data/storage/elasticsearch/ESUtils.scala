@@ -100,7 +100,7 @@ object ESUtils {
     val entity = new NStringEntity(query, ContentType.APPLICATION_JSON)
     val response = client.performRequest(
       "POST",
-      s"/$index/$estype/_search",
+      s"/$index/_search",
       Map("size" -> s"${size}"),
       entity)
     val responseJValue = parse(EntityUtils.toString(response.getEntity))
@@ -154,7 +154,7 @@ object ESUtils {
     val entity = new NStringEntity(query, ContentType.APPLICATION_JSON)
     val response = client.performRequest(
       "POST",
-      s"/$index/$estype/_search",
+      s"/$index/_search",
       Map("scroll" -> scrollLife),
       entity)
     val responseJValue = parse(EntityUtils.toString(response.getEntity))

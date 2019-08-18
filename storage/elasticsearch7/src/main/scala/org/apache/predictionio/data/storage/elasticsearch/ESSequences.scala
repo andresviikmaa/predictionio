@@ -51,7 +51,7 @@ class ESSequences(client: RestClient, config: StorageClientConfig, index: String
       val entity = new NStringEntity(write("n" -> name), ContentType.APPLICATION_JSON)
       val response = client.performRequest(
         "POST",
-        s"/$internalIndex/$estype/$name",
+        s"/$internalIndex/$name",
         Map("refresh" -> "false").asJava,
         entity)
       val jsonResponse = parse(EntityUtils.toString(response.getEntity))
@@ -62,11 +62,11 @@ class ESSequences(client: RestClient, config: StorageClientConfig, index: String
         case "updated" =>
           (jsonResponse \ "_version").extract[Long]
         case _ =>
-          throw new IllegalStateException(s"[$result] Failed to update $internalIndex/$estype/$name")
+          throw new IllegalStateException(s"[$result] Failed to update $internalIndex/$name")
       }
     } catch {
       case e: IOException =>
-        throw new StorageClientException(s"Failed to update $internalIndex/$estype/$name", e)
+        throw new StorageClientException(s"Failed to update $internalIndex/$name", e)
     }
   }
 }

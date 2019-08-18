@@ -84,7 +84,7 @@ class ESEngineInstances(client: RestClient, config: StorageClientConfig, index: 
       val entity = new NStringEntity("{}", ContentType.APPLICATION_JSON)
       val response = client.performRequest(
         "POST",
-        s"/$internalIndex/$estype/",
+        s"/$internalIndex/",
         Map("refresh" -> "true").asJava,
         entity)
       val jsonResponse = parse(EntityUtils.toString(response.getEntity))
@@ -93,12 +93,12 @@ class ESEngineInstances(client: RestClient, config: StorageClientConfig, index: 
         case "created" =>
           Some((jsonResponse \ "_id").extract[String])
         case _ =>
-          error(s"[$result] Failed to create $internalIndex/$estype")
+          error(s"[$result] Failed to create $internalIndex")
           None
       }
     } catch {
       case e: IOException =>
-        error(s"Failed to create $internalIndex/$estype", e)
+        error(s"Failed to create $internalIndex", e)
         None
     }
   }
@@ -107,7 +107,7 @@ class ESEngineInstances(client: RestClient, config: StorageClientConfig, index: 
     try {
       val response = client.performRequest(
         "GET",
-        s"/$internalIndex/$estype/$id",
+        s"/$internalIndex/$id",
         Map.empty[String, String].asJava)
       val jsonResponse = parse(EntityUtils.toString(response.getEntity))
       (jsonResponse \ "found").extract[Boolean] match {
@@ -121,11 +121,11 @@ class ESEngineInstances(client: RestClient, config: StorageClientConfig, index: 
         e.getResponse.getStatusLine.getStatusCode match {
           case 404 => None
           case _ =>
-            error(s"Failed to access to /$internalIndex/$estype/$id", e)
+            error(s"Failed to access to /$internalIndex/$id", e)
             None
         }
       case e: IOException =>
-        error(s"Failed to access to /$internalIndex/$estype/$id", e)
+        error(s"Failed to access to /$internalIndex/$id", e)
         None
     }
   }
@@ -138,7 +138,7 @@ class ESEngineInstances(client: RestClient, config: StorageClientConfig, index: 
       ESUtils.getAll[EngineInstance](client, internalIndex, estype, compact(render(json)))
     } catch {
       case e: IOException =>
-        error(s"Failed to access to /$internalIndex/$estype/_search", e)
+        error(s"Failed to access to /$internalIndex/_search", e)
         Nil
     }
   }
@@ -166,7 +166,7 @@ class ESEngineInstances(client: RestClient, config: StorageClientConfig, index: 
       ESUtils.getAll[EngineInstance](client, internalIndex, estype, compact(render(json)))
     } catch {
       case e: IOException =>
-        error(s"Failed to access to /$internalIndex/$estype/_search", e)
+        error(s"Failed to access to /$internalIndex/_search", e)
         Nil
     }
   }
@@ -186,7 +186,7 @@ class ESEngineInstances(client: RestClient, config: StorageClientConfig, index: 
       val entity = new NStringEntity(write(i), ContentType.APPLICATION_JSON)
       val response = client.performRequest(
         "POST",
-        s"/$internalIndex/$estype/$id",
+        s"/$internalIndex/$id",
         Map("refresh" -> "true").asJava,
         entity)
       val jsonResponse = parse(EntityUtils.toString(response.getEntity))
@@ -195,11 +195,11 @@ class ESEngineInstances(client: RestClient, config: StorageClientConfig, index: 
         case "created" =>
         case "updated" =>
         case _ =>
-          error(s"[$result] Failed to update $internalIndex/$estype/$id")
+          error(s"[$result] Failed to update $internalIndex/$id")
       }
     } catch {
       case e: IOException =>
-        error(s"Failed to update $internalIndex/$estype/$id", e)
+        error(s"Failed to update $internalIndex/$id", e)
     }
   }
 
@@ -207,18 +207,18 @@ class ESEngineInstances(client: RestClient, config: StorageClientConfig, index: 
     try {
       val response = client.performRequest(
         "DELETE",
-        s"/$internalIndex/$estype/$id",
+        s"/$internalIndex/$id",
         Map("refresh" -> "true").asJava)
       val json = parse(EntityUtils.toString(response.getEntity))
       val result = (json \ "result").extract[String]
       result match {
         case "deleted" =>
         case _ =>
-          error(s"[$result] Failed to update $internalIndex/$estype/$id")
+          error(s"[$result] Failed to update $internalIndex/$id")
       }
     } catch {
       case e: IOException =>
-        error(s"Failed to update $internalIndex/$estype/$id", e)
+        error(s"Failed to update $internalIndex/$id", e)
     }
   }
 }
