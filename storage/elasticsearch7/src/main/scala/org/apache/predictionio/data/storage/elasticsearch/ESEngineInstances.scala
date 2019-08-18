@@ -107,7 +107,7 @@ class ESEngineInstances(client: RestClient, config: StorageClientConfig, index: 
     try {
       val response = client.performRequest(
         "GET",
-        s"/$internalIndex/$id",
+        s"/$internalIndex/_doc/$id",
         Map.empty[String, String].asJava)
       val jsonResponse = parse(EntityUtils.toString(response.getEntity))
       (jsonResponse \ "found").extract[Boolean] match {
@@ -186,7 +186,7 @@ class ESEngineInstances(client: RestClient, config: StorageClientConfig, index: 
       val entity = new NStringEntity(write(i), ContentType.APPLICATION_JSON)
       val response = client.performRequest(
         "POST",
-        s"/$internalIndex/$id",
+        s"/$internalIndex/_doc/$id",
         Map("refresh" -> "true").asJava,
         entity)
       val jsonResponse = parse(EntityUtils.toString(response.getEntity))
@@ -207,7 +207,7 @@ class ESEngineInstances(client: RestClient, config: StorageClientConfig, index: 
     try {
       val response = client.performRequest(
         "DELETE",
-        s"/$internalIndex/$id",
+        s"/$internalIndex/_doc/$id",
         Map("refresh" -> "true").asJava)
       val json = parse(EntityUtils.toString(response.getEntity))
       val result = (json \ "result").extract[String]
