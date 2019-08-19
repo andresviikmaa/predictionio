@@ -84,7 +84,7 @@ class ESEngineInstances(client: RestClient, config: StorageClientConfig, index: 
       val entity = new NStringEntity("{}", ContentType.APPLICATION_JSON)
       val response = client.performRequest(
         "POST",
-        s"/$internalIndex/",
+        s"/$internalIndex/_doc",
         Map("refresh" -> "true").asJava,
         entity)
       val jsonResponse = parse(EntityUtils.toString(response.getEntity))
