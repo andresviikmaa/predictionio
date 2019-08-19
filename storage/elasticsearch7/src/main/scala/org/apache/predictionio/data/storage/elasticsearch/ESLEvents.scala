@@ -126,7 +126,7 @@ class ESLEvents(val client: RestClient, config: StorageClientConfig, val baseInd
         val entity = new NStringEntity(compact(render(json)), ContentType.APPLICATION_JSON)
         val response = client.performRequest(
           "POST",
-          s"/$index/$id",
+          s"/$index/_doc/$id",
           Map("refresh" -> ESUtils.getEventDataRefresh(config)).asJava,
           entity)
         val jsonResponse = parse(EntityUtils.toString(response.getEntity))
@@ -219,7 +219,7 @@ class ESLEvents(val client: RestClient, config: StorageClientConfig, val baseInd
     try {
       client.performRequest(
         "GET",
-        s"/$index/$id",
+        s"/$index/_doc/$id",
         Map.empty[String, String].asJava).getStatusLine.getStatusCode match {
           case 200 => true
           case _ => false
