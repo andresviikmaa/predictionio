@@ -77,11 +77,11 @@ class ESAccessKeys(client: RestClient, config: StorageClientConfig, index: Strin
         e.getResponse.getStatusLine.getStatusCode match {
           case 404 => None
           case _ =>
-            error(s"Failed to access to /$internalIndex/$id", e)
+            error(s"Failed to access to /$internalIndex/_doc/$id", e)
             None
         }
       case e: IOException =>
-        error(s"Failed to access to /$internalIndex/$id", e)
+        error(s"Failed to access to /$internalIndex/_doc/$id", e)
         None
     }
   }
@@ -128,11 +128,11 @@ class ESAccessKeys(client: RestClient, config: StorageClientConfig, index: Strin
         case "created" =>
         case "updated" =>
         case _ =>
-          error(s"[$result] Failed to update $internalIndex/$id")
+          error(s"[$result] Failed to update $internalIndex/_doc/$id")
       }
     } catch {
       case e: IOException =>
-        error(s"Failed to update $internalIndex/$id", e)
+        error(s"Failed to update $internalIndex/_doc/$id", e)
     }
   }
 
