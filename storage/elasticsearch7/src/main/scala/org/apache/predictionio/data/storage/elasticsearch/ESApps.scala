@@ -108,7 +108,7 @@ class ESApps(client: RestClient, config: StorageClientConfig, index: String)
         Map.empty[String, String].asJava,
         entity)
       val jsonResponse = parse(EntityUtils.toString(response.getEntity))
-      (jsonResponse \ "hits" \ "total").extract[Long] match {
+      (jsonResponse \ "hits" \ "total" \ "value").extract[Long] match {
         case 0 => None
         case _ =>
           val results = (jsonResponse \ "hits" \ "hits").extract[Seq[JValue]]
