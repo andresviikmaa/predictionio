@@ -59,9 +59,12 @@ class ESPEvents(client: RestClient, config: StorageClientConfig, baseIndex: Stri
       map(_.split(",").toSeq).getOrElse(Seq("localhost"))
     val ports = config.properties.get("PORTS").
       map(_.split(",").toSeq.map(_.toInt)).getOrElse(Seq(9200))
-    (hosts, ports).zipped.map(
-      (h, p) => s"$h:$p").mkString(",")
+    val schemes = config.properties.get("SCHEMES").
+      map(_.split(",").toSeq).getOrElse(Seq("http"))
+    (schemes, hosts, ports).zipped.map(
+      (s, h, p) => s"$s://$h:$p").mkString(",")
   }
+
 
   override def find(
     appId: Int,
